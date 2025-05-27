@@ -1,0 +1,39 @@
+# Zentitle Licensing System C++ Application (Linux)
+
+## Setup Instructions
+
+1. **Copy the Code**  
+   Copy the project code from the provided artifacts package to your local environment.
+
+2. **Configure and Build with CMake**  
+   Use the following commands to configure and build the project:
+
+```bash
+mkdir build
+cd build
+
+cmake -G"Unix Makefiles" ..
+cmake --build .
+```
+
+If the libraries are installed via your system package manager, no additional configuration is required. If not, specify -DCURL_INCLUDE_DIR and -DOPENSSL_ROOT_DIR manually.
+
+ using the CoreLibPath option on Linux, make sure you correctly reference the .so (shared object) file for the Zentitle Core Library. Here are some key considerations:
+
+** Setting the Path
+In appsettings.json, provide the absolute path to the .so file:
+
+```bash
+"CoreLibPath": "/home/youruser/Zentitle2Core/lib/libzentitle2core.so"
+```
+
+Avoid relative paths unless you're certain the working directory won't change.
+
+** Ensure the File is Loadable
+To verify that your .so file is valid and can be loaded:
+
+```bash
+ldd /full/path/to/libzentitle2core.so
+```
+
+This should list all the dependent libraries. If you see not found, make sure those dependencies are installed or adjust LD_LIBRARY_PATH.

@@ -1,0 +1,19 @@
+# Zentitle Licensing System C++ Application (macOS)
+
+## Setup Instructions
+
+1. **Copy the Code**  
+   Copy the project code from the provided artifacts package to your local environment.
+
+2. **Configure and Build with CMake**  
+   Use the following commands to configure and build the project:
+
+```bash
+mkdir build
+cd build
+
+cmake -G"Unix Makefiles" ..
+cmake --build . --config Release
+```
+
+Adjust paths to `curl` and `openssl` as needed, depending on your installation method.
