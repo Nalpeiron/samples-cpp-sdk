@@ -12,7 +12,7 @@ This project is a C++ application that interacts with the Zentitle licensing sys
 ## Test the SDK Using the Sample Application
 1. Navigate to the build directory
 
-```/SDK/src/build/samples/Activation.Console```
+```/Activation.Console```
 
 2. Before running the application, make sure to configure the required values in the appsettings.json file
 ```json
