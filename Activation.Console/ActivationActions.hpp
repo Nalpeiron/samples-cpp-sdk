@@ -92,7 +92,11 @@ namespace ActivationActions
 					activationCode
 				);
 
-				auto activationFuture = activation.activate(credentials);
+				std::string seatName;
+				std::cout << "Enter seat name (keep empty for no seat name): ";
+				std::getline(std::cin, seatName);
+
+				auto activationFuture = activation.activate(credentials, seatName);
 				auto activationInfo = activationFuture.get();
 
 				DisplayHelper::ShowActivationStateModelPanel(activation);
