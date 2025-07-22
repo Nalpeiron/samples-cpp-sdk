@@ -29,14 +29,14 @@ Before building the project, make sure you have the following:
 }
 ```
 
-* UseCoreLibrary * Set to true to use the native Zentitle core library.
-* CoreLibPath *	Full absolute path to the native Zentitle core shared library (.dll, .so, or .dylib depending on platform). Example: /usr/local/lib/libZentitle2Core.so
+* UseCoreLibrary Set to true to use the native Zentitle core library.
+* CoreLibPath Full absolute path to the native Zentitle core shared library (.dll, .so, or .dylib depending on platform). Example: /usr/local/lib/libZentitle2Core.so
 In typical setups, this value will be automatically inferred by the application based on the ZENTITLE_CPP_SDK_DIR path provided at build time, 
 so you usually don't need to modify it manually.
 * ApiUrl	The URL of the Zentitle Licensing API. 
-* TenantId * Your organization's unique tenant ID in Zentitle. 
-* TenantRsaKeyModulus * Tenant RSA key’s modulus
-* ProductId	* The ID of the product you want to activate. 
+* TenantId Your organization's unique tenant ID in Zentitle. 
+* TenantRsaKeyModulus Tenant RSA key’s modulus
+* ProductId	The ID of the product you want to activate. 
 
 Tip: If you're unsure about the values for TenantId or ProductId, please contact your Zentitle administrator or check your Zentitle account dashboard.
 
