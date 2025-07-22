@@ -9,12 +9,13 @@ This project is a C++ application that interacts with the Zentitle licensing sys
 * Dynamic loading of a core library for device fingerprinting
 * Configuration via appsettings.json
 
-## Test the SDK Using the Sample Application
-1. Navigate to the build directory
+## Prerequisites
 
-```/Activation.Console```
+Before building the project, make sure you have the following:
+- **CMake** (3.20 or higher recommended)
+- Zentitle2 SDK package (C++ wrapper for the Zentitle Licensing API)
 
-2. Before running the application, make sure to configure the required values in the appsettings.json file
+### Before running the application, make sure to configure the required values in the appsettings.json file
 ```json
 {
   "UseCoreLibrary": true,
@@ -22,30 +23,28 @@ This project is a C++ application that interacts with the Zentitle licensing sys
   "Licensing": {
     "ApiUrl": "",
     "TenantId": "",
-    "ProductId": "",
-    "SeatName": ""
+	"TenantRsaKeyModulus": "",
+    "ProductId": ""
   }
 }
 ```
 
-- UseCoreLibrary	Set to true to use the native Zentitle core library.
-- CoreLibPath	Full absolute path to the native Zentitle core shared library (.dll, .so, or .dylib depending on platform). Example: /usr/local/lib/libZentitle2Core.so
-- ApiUrl	The URL of the Zentitle Licensing API. 
-- TenantId	Your organization's unique tenant ID in Zentitle. 
-- ProductId	The ID of the product you want to activate. 
-- SeatName	A user-defined identifier for the current machine/seat. Example: dev-machine-01 or johns-laptop. Should be unique per installation.
+* UseCoreLibrary * Set to true to use the native Zentitle core library.
+* CoreLibPath *	Full absolute path to the native Zentitle core shared library (.dll, .so, or .dylib depending on platform). Example: /usr/local/lib/libZentitle2Core.so
+In typical setups, this value will be automatically inferred by the application based on the ZENTITLE_CPP_SDK_DIR path provided at build time, 
+so you usually don't need to modify it manually.
+* ApiUrl	The URL of the Zentitle Licensing API. 
+* TenantId * Your organization's unique tenant ID in Zentitle. 
+* TenantRsaKeyModulus * Tenant RSA key’s modulus
+* ProductId	* The ID of the product you want to activate. 
 
 Tip: If you're unsure about the values for TenantId or ProductId, please contact your Zentitle administrator or check your Zentitle account dashboard.
-
-3. Run the application:
-
-```./Activation.Console```
 
 ##  Build Instructions
 Platform-specific build instructions are located in the following files:
 
-Linux Build Guide: 		README.Linux
-Windows Build Guide:	README.Windows
-macOS Build Guide: 		README.MacOS
+Linux Build Guide: 		README.Linux.md
+Windows Build Guide:	README.Windows.md
+macOS Build Guide: 		README.MacOS.md
 
 These guides cover how to install required dependencies (cURL, OpenSSL), set up your environment, and build the SDK using CMake.
