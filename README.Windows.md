@@ -27,6 +27,7 @@ vcpkg install openssl curl
 Open a **Developer Command Prompt for Visual Studio 2022**, then run:
 
 ```bash
+cd samples-cpp-sdk\Activation.Console
 mkdir build
 cd build
 
@@ -50,9 +51,9 @@ Informs CMake to use the specified vcpkg toolchain file. This allows automatic i
 * -DZENTITLE_CPP_SDK_DIR="..."
 Custom CMake variable used to locate the Zentitle C++ SDK (e.g. headers and compiled libraries).
 Important: This path must point to the src subdirectory inside the SDK, where the actual header and source files reside.
-Example:
+*Example:*
 ```bash
--DZENTITLE_CPP_SDK_DIR="C:/Users/pawel/OneDrive/Documents/praca/Zentitle2_SDK_v2.1.2/SDK/src/"
+-DZENTITLE_CPP_SDK_DIR="C:/path/to/OneDrive/Documents/praca/Zentitle2_SDK_v2.1.2/SDK/src/"
 ```
 
 * -DCURL_CA_BUNDLE="..."

@@ -10,19 +10,20 @@ Clone or extract the project source code to your local development directory.
    Use the following commands to configure and build the project:
 
 ```bash
+cd samples-cpp-sdk/Activation.Console
 mkdir build
 cd build
 
-cmake -G"Unix Makefiles" -DZENTITLE_CPP_SDK_DIR="C:/path/to/Zentitle2_SDK_VERSION/SDK/src/" ..
+cmake -G"Unix Makefiles" -DZENTITLE_CPP_SDK_DIR="/path/to/Zentitle2_SDK_VERSION/SDK/src/" ..
 cmake --build . --config Release
 ```
 
 * -DZENTITLE_CPP_SDK_DIR="..."
 Custom CMake variable used to locate the Zentitle C++ SDK (e.g. headers and compiled libraries).
 Important: This path must point to the src subdirectory inside the SDK, where the actual header and source files reside.
-Example:
+*Example:*
 ```bash
--DZENTITLE_CPP_SDK_DIR="C:/Users/pawel/OneDrive/Documents/praca/Zentitle2_SDK_v2.1.2/SDK/src/"
+-DZENTITLE_CPP_SDK_DIR="/path/to/Zentitle2_SDK_v2.1.2/SDK/src/"
 ```
 
 ### 4. Running the Application
