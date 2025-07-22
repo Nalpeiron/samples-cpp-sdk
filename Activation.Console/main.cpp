@@ -1,12 +1,12 @@
-﻿#include "Zentitle.Licensing.Client.CPP/Commons/PlainLogger.hpp"
-#include "Zentitle.Licensing.Client.CPP/Commons/DynamicLibraryLoader.hpp"
+﻿#include "Zentitle.Licensing.Client.CPP/Commons/DynamicLibraryLoader.hpp"
 #include "Zentitle.Licensing.Client.CPP/Commons/OSMacros.hpp"
-#include "Zentitle.Licensing.Client.CPP/Api/Models/ActivationCodeCredentialsModel.hpp"
-#include "Zentitle.Licensing.Client.CPP/Api/LicenseManager/Activation.hpp"
+#include "ActivationCodeCredentialsModel.hpp"
+#include "Activation.hpp"
 #include "ActivationConfig.hpp"
 #include "ActivationActions.hpp"
 #include "LicenseStorage.hpp"
 #include "CoreLibraryManagerConfigProvider.hpp"
+#include "PromptHelper.hpp"
 #include <random>
 #include <array>
 
@@ -56,8 +56,6 @@ unsigned long long randomize()
 
 int main()
 {
-	SDKLogger::init("./Activation.Console.log");
-
 	std::string currentPath = std::filesystem::current_path().string();
 
 #ifdef ZEN_WIN64
@@ -69,15 +67,13 @@ int main()
 	std::string configPath = currentPath + "/appsettings.json";
 #endif
 
-	LOG(LEVEL_INFO, "Application started.");
-	LOG(LEVEL_INFO, "Loading configuration from: " + configPath);
-
 	ActivationConsole::ActivationConfig config = ActivationConsole::LoadConfiguration(configPath);
 	std::string seatId = "";
 
+
 	if (config.UseCoreLibrary)
 	{
-		std::cout << "- Using Zentitle2Core C++ library for device fingerprint, secure license storage and offline activation operations" << std::endl;
+		std::cout << "- Using Zentitle2Core C++ library for secure license storage and offline activation operations" << std::endl;
 
 		helpers::DynamicLibraryLoader::native_handle_type coreLibrary = nullptr;
 		std::unique_ptr<helpers::DynamicLibraryLoader> loader;
@@ -92,38 +88,53 @@ int main()
 			return EXIT_FAILURE;
 		}
 
-		const auto loadedFunction = loader->get_function<bool(char*, int*, int)>("generateDeviceFingerprint");
-
-		const static unsigned int DeviceFingerprintMaxLength = 128;
-		std::array<char, DeviceFingerprintMaxLength> generatedDeviceFingerprint = {};
-		int length = 0;
-
-		if (loadedFunction == nullptr)
+		if (Confirm([](ConfirmOptions& o) { o.Message = "Use device fingerprint for seat ID generation?"; }))
 		{
-			LOG(LEVEL_ERROR, "Failed to load core library.");
-			return EXIT_FAILURE;
+			const auto loadedFunction = loader->get_function<bool(char*, int*, int)>("generateDeviceFingerprint");
+
+			const static unsigned int DeviceFingerprintMaxLength = 128;
+			std::array<char, DeviceFingerprintMaxLength> generatedDeviceFingerprint = {};
+			int length = 0;
+
+			if (loadedFunction == nullptr)
+			{
+				return EXIT_FAILURE;
+			}
+
+			const static int FINGERPRINT_OPTION_DEFAULT = 0;
+			bool retValue = loadedFunction(generatedDeviceFingerprint.data(), &length, FINGERPRINT_OPTION_DEFAULT);
+
+			if (!retValue)
+			{
+				return EXIT_FAILURE;
+			}
+
+			seatId = std::string(generatedDeviceFingerprint.data());
+
+			loader.reset();
 		}
-
-		const static int FINGERPRINT_OPTION_DEFAULT = 0;
-		bool retValue = loadedFunction(generatedDeviceFingerprint.data(), &length, FINGERPRINT_OPTION_DEFAULT);
-
-		if (!retValue)
+		else
 		{
-			LOG(LEVEL_ERROR, "Failed to generate fingerprint.");
-			return EXIT_FAILURE;
+			std::cout << "Enter license seat ID: ";
+			std::getline(std::cin, seatId);
+			if (seatId.empty())
+			{
+				seatId = std::to_string(randomize());
+			}
+			else
+			{
+				std::cout << "Using manually entered seat ID: " << seatId << std::endl;
+			}
+
 		}
-
-		seatId = std::string(generatedDeviceFingerprint.data());
-		LOG(LEVEL_INFO, "Generated fingerprint: " + seatId);
-
-		loader.reset();
 	}
 	else
 	{
 		std::cout << "- Zentitle2Core C++ library usage is disabled in 'appsettings.json', the won't be loaded and offline activation won't work";
 		seatId = std::to_string(randomize());
-		LOG(LEVEL_INFO, "Generated random seatId: " + seatId);
+		std::cout << "Generated random seatId: " << seatId << std::endl;
 	}
+
 
 	// Setup Activation Options
 	ZentitleLicensingClient::ActivationOptions options;
@@ -146,7 +157,7 @@ int main()
 	std::string libraryDirectory = coreLibraryPath.parent_path().string() + "/";
 	std::string libraryName = coreLibraryPath.filename().string();
 
-	options.setActivationStorage(LicenseStorage::Initialize(config.UseCoreLibrary, libraryDirectory, libraryName));
+	options.setActivationStorage(LicenseStorage::Initialize(config.UseCoreLibrary, libraryDirectory, libraryName, LicenseStorage::DeletionPrompt::Ask));
 
 
 	// Create Activation Instance
@@ -191,13 +202,20 @@ int main()
 				{
 					const auto& name = actionMapping->actionNames[i];
 
-					if (mode != ActivationMode::Online &&
+					if (mode == ActivationMode::Offline &&
 						(name == "Checkout advanced feature" ||
 							name == "Return element-pool feature" ||
 							name == "Track usage of a bool feature" ||
 							name == "Deactivate license" ||
 							name == "Refresh activation lease" ||
 							name == "Pull activation state from the server"))
+					{
+						continue;
+					}
+
+					if (mode == ActivationMode::Online &&
+						(name == "Deactivate offline license" ||
+							name == "Refresh offline activation lease (with refresh token from End User Portal)"))
 					{
 						continue;
 					}
