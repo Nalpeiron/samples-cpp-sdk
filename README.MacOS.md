@@ -31,5 +31,5 @@ Important: This path must point to the src subdirectory inside the SDK, where th
 After building, the output binary will be located in:
 
 ```
-build/Release/Zentitle.Activation.Example
+build/Zentitle.Activation.Example
 ```

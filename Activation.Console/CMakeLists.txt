@@ -11,7 +11,7 @@ find_package(OpenSSL REQUIRED)
 set(ZENTITLE_CPP_SDK_DIR "" CACHE PATH "Path to License Manager directory")
 
 if(NOT EXISTS "${ZENTITLE_CPP_SDK_DIR}")
-    message(FATAL_ERROR "ZENTITLE_CPP_SDK_DIR is not set or path does not exist. Please set -DLICENSE_MANAGER_DIR=/path/to/LicenseManager")
+    message(FATAL_ERROR "ZENTITLE_CPP_SDK_DIR is not set or path does not exist. Please set -DZENTITLE_CPP_SDK_DIR=/path/to/ZENTITLE_CPP_SDK_DIR")
 endif()
 
 message(STATUS "Using Zentitle CPP SDK from: ${ZENTITLE_CPP_SDK_DIR}")
