@@ -29,7 +29,7 @@ elseif(UNIX)
     set(ZENTITLE2CORE_FILENAME "libZentitle2Core.so")
 endif()
 
-set(ZENTITLE2CORE_PATH "${ZENTITLE_CPP_SDK_ROOT}/../../artifacts_${SYSTEM}/Zentitle2Core/${SYSTEM}/${ZENTITLE2CORE_FILENAME}")
+set(ZENTITLE2CORE_PATH "${ZENTITLE_CPP_SDK_ROOT}/../../Zentitle2Core/${SYSTEM}/${ZENTITLE2CORE_FILENAME}")
 
 configure_file(
     ${CMAKE_SOURCE_DIR}/Config/appsettings.json.in
@@ -53,8 +53,7 @@ set(CURL_USE_OPENSSL ON)
 set(CMAKE_USE_OPENSSL ON)
 
 target_include_directories(${PROJECT_NAME}
-    PUBLIC $<BUILD_INTERFACE:${ZENTITLE_CPP_SDK_DIR}>/src
-	PUBLIC $<BUILD_INTERFACE:${ZENTITLE_CPP_SDK_DIR}>/src/Zentitle.Licensing.Client.CPP/Api/Models
+    PUBLIC $<BUILD_INTERFACE:${ZENTITLE_CPP_SDK_DIR}>/../lib/${SYSTEM}/static/Include
 )
 
 include_directories(${ZENTITLE_CPP_SDK_DIR}/libextern_libraries/nlohmann/)

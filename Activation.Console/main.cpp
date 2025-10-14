@@ -1,5 +1,6 @@
-﻿#include "Zentitle.Licensing.Client.CPP/Commons/DynamicLibraryLoader.hpp"
-#include "Zentitle.Licensing.Client.CPP/Commons/OSMacros.hpp"
+﻿
+#include "DynamicLibraryLoader.hpp"
+#include "OSMacros.hpp"
 #include "ActivationCodeCredentialsModel.hpp"
 #include "Activation.hpp"
 #include "ActivationConfig.hpp"
@@ -9,6 +10,11 @@
 #include "PromptHelper.hpp"
 #include <random>
 #include <array>
+
+#ifdef __APPLE__
+#include <termios.h>
+#include <unistd.h>
+#endif
 
 void handleExceptions(const std::function<void()>& func)
 {

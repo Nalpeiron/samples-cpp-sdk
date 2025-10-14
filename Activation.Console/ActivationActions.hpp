@@ -31,8 +31,8 @@ struct TerminalRawMode {
 };
 #endif
 
-#include "Zentitle.Licensing.Client.CPP/Features/ActiveFeatureSet.hpp"
-#include "Zentitle.Licensing.Client.CPP/Features/ReadonlyFeatureSet.hpp"
+#include "ActiveFeatureSet.hpp"
+#include "ReadonlyFeatureSet.hpp"
 
 namespace ActivationActions
 {
@@ -96,7 +96,11 @@ namespace ActivationActions
 				std::cout << "Enter seat name (keep empty for no seat name): ";
 				std::getline(std::cin, seatName);
 
-				auto activationFuture = activation.activate(credentials, seatName);
+				std::string editionId;
+				std::cout << "Enter edition ID (keep empty for default edition): ";
+				std::getline(std::cin, editionId);
+
+				auto activationFuture = activation.activate(credentials, seatName, editionId);
 				auto activationInfo = activationFuture.get();
 
 				DisplayHelper::ShowActivationStateModelPanel(activation);
