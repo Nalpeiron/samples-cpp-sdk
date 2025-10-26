@@ -4,7 +4,8 @@
 
 ### 1. Clone or Extract the Code
 
-Clone or extract the project source code to your local development directory.
+Clone or extract the project source code to your local development directory. 
+Note that the SDK headers and sources reside inside the `SDK/src` directory of the unpacked archive.
 
 ### 2. Configure and Build with CMake
    Use the following commands to configure and build the project:

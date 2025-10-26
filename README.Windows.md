@@ -4,7 +4,8 @@
 
 ### 1. Clone or Extract the Code
 
-Clone or extract the project source code to your local development directory.
+Clone or extract the project source code to your local development directory. 
+Note that the SDK headers and sources reside inside the `SDK/src` directory of the unpacked archive.
 
 ### 2. Install Dependencies with vcpkg
 
@@ -62,7 +63,7 @@ Tells libcurl (used internally by the SDK or app) where to find the CA certifica
 
 * -DVCPKG_TARGET_TRIPLET="x64-windows" *
 Forces CMake’s vcpkg integration to pull libraries from the x64-windows triplet. A triplet defines the target architecture (plus CRT/runtime flavor), 
-so this keeps the build and linker aligned with 64-bit Windows binaries.
+so this keeps the build and linker aligned with 64-bit Windows binaries. If you are targeting another triplet (e.g. `x86-windows`), change both the CMake flag and the earlier `vcpkg install` command to match.
 
 Replace all placeholder paths (e.g. C:/path/to/vcpkg, Zentitle2_SDK_VERSION) with the actual paths on your system.
 
