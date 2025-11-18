@@ -2,7 +2,16 @@
   "name": "zentitle-client",
   "version": "1.0.0",
   "dependencies": [
-    "curl",
+    {
+      "name": "curl",
+      "default-features": false,
+      "features": ["schannel"],
+      "platform": "windows"
+    },
+    {
+      "name": "curl",
+      "platform": "!windows"
+    },
     "openssl"
   ],
   "builtin-baseline": "ea2a964f9303270322cf3f2d51c265ba146c422d"
