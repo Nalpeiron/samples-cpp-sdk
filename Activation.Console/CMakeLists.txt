@@ -5,6 +5,9 @@ project (Zentitle.Activation.Example)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+include(${CMAKE_SOURCE_DIR}/cmake/PlatformConfig.cmake)
+message("Detected platform: ${SYSTEM}")
+
 find_package(CURL REQUIRED)
 find_package(OpenSSL REQUIRED)
 
@@ -17,9 +20,6 @@ endif()
 message(STATUS "Using Zentitle CPP SDK from: ${ZENTITLE_CPP_SDK_DIR}")
 
 set(ZENTITLE_CPP_SDK_ROOT "${ZENTITLE_CPP_SDK_DIR}" CACHE PATH "Path to Zentitle SDK root")
-
-include(${CMAKE_SOURCE_DIR}/cmake/PlatformConfig.cmake)
-message("Detected platform: ${SYSTEM}")
 
 if(WIN32)
     set(ZENTITLE2CORE_FILENAME "Zentitle2Core.dll")
