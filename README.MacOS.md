@@ -34,3 +34,5 @@ After building, the output binary will be located in:
 ```
 build/Zentitle.Activation.Example
 ```
+
+### Before running the application, make sure to configure the required values in the appsettings.json file. For details, see the README.md.

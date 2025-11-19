@@ -65,6 +65,8 @@ After building, the output binary will be located in:
 build/Release/Zentitle.Activation.Example.exe
 ```
 
+### Before running the application, make sure to configure the required values in the appsettings.json file. For details, see the README.md.
+
 ## Troubleshooting: MSB6003 / DirectoryNotFoundException (Long Path Issue on Windows)
 
 If you encounter an error similar to:
