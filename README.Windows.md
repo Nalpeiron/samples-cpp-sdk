@@ -17,12 +17,6 @@ cd vcpkg
 .\bootstrap-vcpkg.bat
 ```
 
-Install required packages (example):
-
-```bash
-vcpkg install openssl curl
-```
-
 ### 3. Configure and Build with CMake
 
 Open a **Developer Command Prompt for Visual Studio 2022**, then run:
@@ -36,7 +30,6 @@ cmake .. ^
   -G "Visual Studio 17 2022" ^
   -DCMAKE_TOOLCHAIN_FILE="C:/path/to/vcpkg/scripts/buildsystems/vcpkg.cmake" ^
   -DZENTITLE_CPP_SDK_DIR="C:/path/to/Zentitle2_SDK_VERSION/SDK/src/" ^
-  -DCURL_CA_BUNDLE="C:/path/to/Zentitle2_SDK_VERSION/samples/Activation.Console/Config/cert/cacert.pem" ^
   -DVCPKG_TARGET_TRIPLET=x64-windows
 
 cmake --build . --config Release
@@ -58,9 +51,6 @@ Important: This path must point to the src subdirectory inside the SDK, where th
 -DZENTITLE_CPP_SDK_DIR="C:/path/to/OneDrive/Documents/praca/Zentitle2_SDK_v2.1.2/SDK/src/"
 ```
 
-* -DCURL_CA_BUNDLE="..."
-Tells libcurl (used internally by the SDK or app) where to find the CA certificate bundle (cacert.pem). This is necessary to verify TLS/HTTPS connections.
-
 * -DVCPKG_TARGET_TRIPLET="x64-windows" *
 Forces CMake’s vcpkg integration to pull libraries from the x64-windows triplet. A triplet defines the target architecture (plus CRT/runtime flavor), 
 so this keeps the build and linker aligned with 64-bit Windows binaries. If you are targeting another triplet (e.g. `x86-windows`), change both the CMake flag and the earlier `vcpkg install` command to match.
@@ -74,3 +64,31 @@ After building, the output binary will be located in:
 ```
 build/Release/Zentitle.Activation.Example.exe
 ```
+
+## Troubleshooting: MSB6003 / DirectoryNotFoundException (Long Path Issue on Windows)
+
+If you encounter an error similar to:
+
+    error MSB6003: The specified task executable "CL.exe" could not be run.
+    System.IO.DirectoryNotFoundException: Could not find a part of the path ...
+    Zentitle2CoreLibrary.dir\Release\Zentitle.<hash>.tlog
+
+This is **not** a problem with `CL.exe`.\
+The real issue is a *too long file path*, especially when the project is
+inside OneDrive.
+
+### How to fix
+
+1.  Move the project to a short path, e.g.:
+```
+    C:\dev\zentitle
+```
+
+2.  Recreate your `build` directory:
+``` bash
+rmdir /S /Q build
+mkdir build
+```
+
+3.  Re-run CMake and build again.
+
