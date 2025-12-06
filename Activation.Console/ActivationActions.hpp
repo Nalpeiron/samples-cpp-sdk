@@ -1,10 +1,10 @@
 #pragma once 
 
-#include "Activation.hpp"
+#include "Zentitle.Licensing.Client.CPP/Api/LicenseManager/Activation.hpp"
 #include "DisplayHelper.hpp"
-#include "SDKExceptions.hpp"
-#include "LicensingApiException.hpp"
-#include "ActivationCodeCredentialsModel.hpp"
+#include "Zentitle.Licensing.Client.CPP/Api/Models/SDKExceptions.hpp"
+#include "Zentitle.Licensing.Client.CPP/Api/Models/LicensingApiException.hpp"
+#include "Zentitle.Licensing.Client.CPP/Api/Models/ActivationCodeCredentialsModel.hpp"
 #include "Helpers.hpp"
 #include <optional>
 #include <iostream>
@@ -31,8 +31,8 @@ struct TerminalRawMode {
 };
 #endif
 
-#include "ActiveFeatureSet.hpp"
-#include "ReadonlyFeatureSet.hpp"
+#include "Zentitle.Licensing.Client.CPP/Features/ActiveFeatureSet.hpp"
+#include "Zentitle.Licensing.Client.CPP/Features/ReadonlyFeatureSet.hpp"
 
 namespace ActivationActions
 {

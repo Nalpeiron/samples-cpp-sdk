@@ -1,12 +1,12 @@
 ﻿
-#include "DynamicLibraryLoader.hpp"
-#include "OSMacros.hpp"
-#include "ActivationCodeCredentialsModel.hpp"
-#include "Activation.hpp"
+#include "Zentitle.Licensing.Client.CPP/Commons/DynamicLibraryLoader.hpp"
+#include "Zentitle.Licensing.Client.CPP/Commons/OSMacros.hpp"
+#include "Zentitle.Licensing.Client.CPP/Api/Models/ActivationCodeCredentialsModel.hpp"
+#include "Zentitle.Licensing.Client.CPP/Api/LicenseManager/Activation.hpp"
 #include "ActivationConfig.hpp"
 #include "ActivationActions.hpp"
 #include "LicenseStorage.hpp"
-#include "CoreLibraryManagerConfigProvider.hpp"
+#include "Zentitle.Licensing.Client.CPP/Api/Models/CoreLibraryManagerConfigProvider.hpp"
 #include "PromptHelper.hpp"
 #include <random>
 #include <array>

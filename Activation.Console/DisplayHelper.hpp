@@ -5,15 +5,15 @@
 #include <ctime>
 #include <sstream>
 
-#include "Activation.hpp"
-#include "ActivationStateModel.hpp"
-#include "ActivationStateHelpers.hpp"
+#include "Zentitle.Licensing.Client.CPP/Api/LicenseManager/Activation.hpp"
+#include "Zentitle.Licensing.Client.CPP/Api/Models/ActivationStateModel.hpp"
+#include "Zentitle.Licensing.Client.CPP/Api/Models/ActivationStateHelpers.hpp"
 
-#include "ActivationFeature.hpp"
-#include "ActivationAttribute.hpp"
+#include "Zentitle.Licensing.Client.CPP/Api/Models/ActivationFeature.hpp"
+#include "Zentitle.Licensing.Client.CPP/Api/Models/ActivationAttribute.hpp"
 
-#include "ActiveFeatureSet.hpp"
-#include "PersistentData.hpp"
+#include "Zentitle.Licensing.Client.CPP/Features/ActiveFeatureSet.hpp"
+#include "Zentitle.Licensing.Client.CPP/Persistence/PersistentData.hpp"
 
 #pragma warning(disable : 4996)
 

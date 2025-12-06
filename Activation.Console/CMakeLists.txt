@@ -53,7 +53,7 @@ set(CURL_USE_OPENSSL ON)
 set(CMAKE_USE_OPENSSL ON)
 
 target_include_directories(${PROJECT_NAME}
-    PUBLIC $<BUILD_INTERFACE:${ZENTITLE_CPP_SDK_DIR}>/../lib/${SYSTEM}/static/Include
+    PUBLIC ${ZENTITLE_CPP_SDK_DIR}/src
 )
 
 include_directories(${ZENTITLE_CPP_SDK_DIR}/libextern_libraries/nlohmann/)

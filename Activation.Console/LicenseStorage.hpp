@@ -5,10 +5,10 @@
 #include <iostream>
 #include <memory>
 
-#include "IActivationStorage.hpp"
-#include "SecureActivationStorage.hpp"
-#include "SecureStorage.hpp" 
-#include "CoreLibraryManagerConfigProvider.hpp"
+#include "Zentitle.Licensing.Client.CPP/Persistence/Storage/IActivationStorage.hpp"
+#include "Zentitle.Licensing.Client.CPP/Zentitle2CoreLibrary/SecureActivationStorage.hpp"
+#include "Zentitle.Licensing.Client.CPP/Zentitle2CoreLibrary/SecureStorage.hpp" 
+#include "Zentitle.Licensing.Client.CPP/Api/Models/CoreLibraryManagerConfigProvider.hpp"
 
 using namespace ZentitleLicensingClient;
 
