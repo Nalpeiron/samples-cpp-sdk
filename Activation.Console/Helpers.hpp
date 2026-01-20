@@ -1,3 +1,5 @@
+#pragma once
+
 #include <string>
 #include <stdexcept>
 #include <cctype>
@@ -79,7 +81,7 @@ namespace InputHelper
 			return false;
 		}
 
-		if (parsed > std::numeric_limits<size_t>::max())
+		if (parsed > (std::numeric_limits<size_t>::max)())
 		{
 			return false;
 		}
@@ -105,7 +107,7 @@ namespace InputHelper
 			return false;
 		}
 
-		if (parsed < std::numeric_limits<int>::min() || parsed > std::numeric_limits<int>::max())
+		if (parsed < (std::numeric_limits<int>::min)() || parsed > (std::numeric_limits<int>::max)())
 		{
 			return false;
 		}
