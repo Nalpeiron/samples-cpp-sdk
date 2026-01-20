@@ -5,6 +5,7 @@
 #include "Activation.hpp"
 #include "ActivationConfig.hpp"
 #include "ActivationActions.hpp"
+#include "Helpers.hpp"
 #include "LicenseStorage.hpp"
 #include "CoreLibraryManagerConfigProvider.hpp"
 #include "PromptHelper.hpp"
@@ -242,29 +243,32 @@ int main()
 			std::cout << "Enter your choice: ";
 			std::getline(std::cin, selectedActionStr);
 
-			if (selectedActionStr == "0" || selectedActionStr == "quit" || selectedActionStr == "q")
+			std::string trimmedInput = InputHelper::TrimCopy(selectedActionStr);
+			std::string normalizedInput = InputHelper::ToLowerCopy(trimmedInput);
+
+			if (normalizedInput == "0" || normalizedInput == "quit" || normalizedInput == "q")
 			{
 				quit = true;
 				continue;
 			}
 
-			try
+			size_t selectedAction = 0;
+			if (!InputHelper::TryParseSizeT(trimmedInput, selectedAction) || selectedAction == 0)
 			{
-				size_t selectedAction = std::stoi(selectedActionStr) - 1;
-
-				if (selectedAction < filteredActions.size())
-				{
-					std::cout << "\nExecuting: " << filteredActionNames[selectedAction] << std::endl;
-					filteredActions[selectedAction](*activation, config.ApiUrl);
-				}
-				else
-				{
-					std::cout << "Invalid selection. Please try again." << std::endl;
-				}
+				std::cout << "Invalid selection. Please try again." << std::endl;
+				continue;
 			}
-			catch (const std::exception& ex)
+
+			selectedAction -= 1;
+
+			if (selectedAction < filteredActions.size())
 			{
-				std::cout << "Error processing selection: " << ex.what() << std::endl;
+				std::cout << "\nExecuting: " << filteredActionNames[selectedAction] << std::endl;
+				filteredActions[selectedAction](*activation, config.ApiUrl);
+			}
+			else
+			{
+				std::cout << "Invalid selection. Please try again." << std::endl;
 			}
 		}
 		});

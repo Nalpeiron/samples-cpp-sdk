@@ -363,7 +363,11 @@ namespace ActivationActions
 					std::cout << "Specify amount to checkout: ";
 					std::string amountStr;
 					std::getline(std::cin, amountStr);
-					amountToCheckout = std::stoi(amountStr);
+					if (!InputHelper::TryParseInt(amountStr, amountToCheckout) || amountToCheckout <= 0)
+					{
+						DisplayHelper::WriteError("Invalid amount. Please enter a positive integer.");
+						return;
+					}
 
 					std::cout << "Checking out " << amountToCheckout << " "
 						<< (amountToCheckout > 1 ? "features" : "feature")
@@ -426,7 +430,11 @@ namespace ActivationActions
 					std::cout << "Specify amount to return: ";
 					std::string amountStr;
 					std::getline(std::cin, amountStr);
-					amountToReturn = std::stoi(amountStr);
+					if (!InputHelper::TryParseInt(amountStr, amountToReturn) || amountToReturn <= 0)
+					{
+						DisplayHelper::WriteError("Invalid amount. Please enter a positive integer.");
+						return;
+					}
 
 					std::cout << "Returning " << amountToReturn << " "
 						<< (amountToReturn > 1 ? "features" : "feature")
@@ -655,21 +663,21 @@ namespace ActivationActions
 		std::string choiceStr;
 		std::getline(std::cin, choiceStr);
 
-		try
+		size_t choice = 0;
+		if (!InputHelper::TryParseSizeT(choiceStr, choice) || choice == 0)
 		{
-			size_t choice = std::stoi(choiceStr) - 1;
-			if (choice < actionMapping->actions.size())
-			{
-				actionMapping->actions[choice](activation, host);
-			}
-			else
-			{
-				DisplayHelper::WriteError("Invalid selection");
-			}
+			DisplayHelper::WriteError("Invalid selection");
+			return;
 		}
-		catch (const std::exception& ex)
+
+		choice -= 1;
+		if (choice < actionMapping->actions.size())
 		{
-			DisplayHelper::WriteError("Invalid input: " + std::string(ex.what()));
+			actionMapping->actions[choice](activation, host);
+		}
+		else
+		{
+			DisplayHelper::WriteError("Invalid selection");
 		}
 	}
 
