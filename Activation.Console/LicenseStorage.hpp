@@ -9,6 +9,7 @@
 #include "SecureActivationStorage.hpp"
 #include "SecureStorage.hpp" 
 #include "CoreLibraryManagerConfigProvider.hpp"
+#include "Helpers.hpp"
 
 using namespace ZentitleLicensingClient;
 
@@ -90,13 +91,23 @@ private:
 		std::string input;
 		while (true)
 		{
-			std::cout << message << " (yes/no): ";
-			std::cin >> input;
-			if (input == "yes" || input == "no")
+			std::cout << message << " [Yes/No]: ";
+			if (!std::getline(std::cin, input))
 			{
-				return input == "yes";
+				return false;
 			}
-			std::cout << "Invalid input. Please type 'yes' or 'no'.\n";
+
+			std::string normalized = InputHelper::ToLowerCopy(InputHelper::TrimCopy(input));
+			if (normalized == "yes" || normalized == "y")
+			{
+				return true;
+			}
+
+			if (normalized == "no" || normalized == "n")
+			{
+				return false;
+			}
+			std::cout << "Invalid input. Please type 'Yes' or 'No'.\n";
 		}
 	}
 };
