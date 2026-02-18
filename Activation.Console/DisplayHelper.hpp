@@ -4,6 +4,7 @@
 #include <string>
 #include <ctime>
 #include <sstream>
+#include <iomanip>
 
 #include "Activation.hpp"
 #include "ActivationStateModel.hpp"
@@ -270,30 +271,123 @@ namespace DisplayHelper
 
 	void ShowFeaturesTable(std::vector<ActivationFeature> features, const std::optional<std::string>& keyToHighlight /*= std::nullopt*/)
 	{
+		const std::size_t keyWidth = 32;
+		const std::size_t typeWidth = 12;
+		const std::size_t activeWidth = 12;
+		const std::size_t availableWidth = 12;
+		const std::size_t totalWidth = 10;
+
+		auto truncateWithEllipsis = [](const std::string& value, std::size_t width) -> std::string
+			{
+				if (value.size() <= width)
+				{
+					return value;
+				}
+				if (width <= 3)
+				{
+					return value.substr(0, width);
+				}
+				return value.substr(0, width - 3) + "...";
+			};
+
+		auto formatCell = [&](const std::string& value, std::size_t width) -> std::string
+			{
+				std::string truncated = truncateWithEllipsis(value, width);
+				if (truncated.size() < width)
+				{
+					truncated.append(width - truncated.size(), ' ');
+				}
+				return truncated;
+			};
+
+		auto formatKeyCell = [&](const std::string& value, bool highlight, std::size_t width) -> std::string
+			{
+				std::string cell = formatCell(value, width);
+				if (!highlight)
+				{
+					return cell;
+				}
+				return std::string("\033[34m") + cell + "\033[0m";
+			};
+
 		std::cout << "\n\033[1;36m=== Available Features ===\033[0m\n";
-		std::cout << std::setw(20) << "Feature Key"
-			<< std::setw(15) << "Type"
-			<< std::setw(10) << "ActiveState"
-			<< std::setw(12) << "Available"
-			<< std::setw(10) << "Total" << "\n";
-		std::cout << std::string(70, '-') << "\n";
+		std::cout
+			<< formatCell("Feature Key", keyWidth)
+			<< formatCell("Type", typeWidth)
+			<< formatCell("ActiveState", activeWidth)
+			<< formatCell("Available", availableWidth)
+			<< formatCell("Total", totalWidth)
+			<< "\n";
+		std::cout << std::string(keyWidth + typeWidth + activeWidth + availableWidth + totalWidth, '-') << "\n";
 
 		for (auto feature : features)
 		{
-			std::string key = feature.key;
-			if (keyToHighlight && key == *keyToHighlight)
-			{
-				key = "\033[34m" + key + "\033[0m"; // Highlight in blue
-			}
+			bool highlightKey = keyToHighlight && feature.key == *keyToHighlight;
 
-			std::cout << std::setw(20) << key
-				<< std::setw(15) << ActivationFeature::featureTypeToString(feature.type)
-				<< std::setw(10) << (feature.active ? std::to_string(*feature.active) : "")
-				<< std::setw(12) << (feature.available ? std::to_string(*feature.available) : "Unlimited")
-				<< std::setw(10) << (feature.total ? std::to_string(*feature.total) : "Unlimited")
+			std::cout
+				<< formatKeyCell(feature.key, highlightKey, keyWidth)
+				<< formatCell(ActivationFeature::featureTypeToString(feature.type), typeWidth)
+				<< formatCell(feature.active ? std::to_string(*feature.active) : "", activeWidth)
+				<< formatCell(feature.available ? std::to_string(*feature.available) : "Unlimited", availableWidth)
+				<< formatCell(feature.total ? std::to_string(*feature.total) : "Unlimited", totalWidth)
 				<< "\n";
 		}
-		std::cout << std::string(70, '-') << "\n";
+		std::cout << std::string(keyWidth + typeWidth + activeWidth + availableWidth + totalWidth, '-') << "\n";
+
+		std::vector<const ActivationFeature*> usageCountFeatures;
+		for (const auto& feature : features)
+		{
+			if (feature.type == FeatureType::UsageCount)
+			{
+				usageCountFeatures.push_back(&feature);
+			}
+		}
+
+		if (!usageCountFeatures.empty())
+		{
+			auto formatOptionalUtc = [](const std::optional<std::time_t>& value) -> std::string
+				{
+					if (!value.has_value())
+					{
+						return "null";
+					}
+
+					std::time_t ts = value.value();
+					std::tm tm_utc{};
+#if defined(_WIN32) || defined(_WIN64)
+					gmtime_s(&tm_utc, &ts);
+#else
+					gmtime_r(&ts, &tm_utc);
+#endif
+
+					std::ostringstream timeStream;
+					timeStream << std::put_time(&tm_utc, "%Y-%m-%dT%H:%M:%S") << "Z";
+					return timeStream.str();
+				};
+
+			const std::size_t usageKeyWidth = 32;
+			const std::size_t usageCurrentWidth = 21;
+			const std::size_t usageNextWidth = 21;
+
+			std::cout << "\n\033[1;36m=== Usage Count Details ===\033[0m\n";
+			std::cout
+				<< formatCell("Feature Key", usageKeyWidth)
+				<< formatCell("CurrentStart", usageCurrentWidth)
+				<< formatCell("NextStart", usageNextWidth)
+				<< "\n";
+			std::cout << std::string(usageKeyWidth + usageCurrentWidth + usageNextWidth, '-') << "\n";
+
+			for (const auto* feature : usageCountFeatures)
+			{
+				std::cout
+					<< formatCell(feature->key, usageKeyWidth)
+					<< formatCell(formatOptionalUtc(feature->currentUsagePeriodStart), usageCurrentWidth)
+					<< formatCell(formatOptionalUtc(feature->nextUsagePeriodStart), usageNextWidth)
+					<< "\n";
+			}
+
+			std::cout << std::string(usageKeyWidth + usageCurrentWidth + usageNextWidth, '-') << "\n";
+		}
 	}
 
 	void ShowAttributesTable(const std::vector<ActivationAttribute>& attributes)
