@@ -83,10 +83,11 @@ The generated file will contain the main settings used by the sample:
 
 - `UseCoreLibrary`: keep this set to `true` for the current sample.
 - `CoreLibPath`: path to the native Zentitle core shared library (`.dll`). When `ZENTITLE_CPP_SDK_DIR` points to the unpacked SDK layout, this path is generated automatically and usually does not need to be edited manually.
-- `ApiUrl`: URL of the Zentitle Licensing API.
-- `TenantId`: your Zentitle tenant identifier.
-- `TenantRsaKeyModulus`: tenant RSA modulus used by the current sample configuration.
-- `ProductId`: identifier of the product associated with an existing entitlement that you want to activate.
+- `ApiUrl`: URL of the Zentitle Licensing API. Find it in your Zentitle portal under `Administration -> API Credentials -> Licensing`, for example `https://<your-customer-address>/administration/api-credentials#licensing`.
+- `TenantId`: your Zentitle tenant identifier. Find it in the same `Administration -> API Credentials -> Licensing` section.
+- `TenantRsaKeyModulus`: tenant RSA modulus used by the current sample configuration. Find it in the same `Administration -> API Credentials -> Licensing` section.
+- `ProductId`: identifier of the product associated with an existing entitlement that you want to activate. Find it in the specific entitlement.
+- `Activation Code`: find it in the same entitlement. The sample asks for it at runtime and does not store it in `appsettings.json`.
 
 If you do not know the required tenant or product values, contact your Zentitle administrator.
 
