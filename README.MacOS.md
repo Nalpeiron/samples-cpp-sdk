@@ -92,3 +92,18 @@ The generated file will contain the main settings used by the sample:
 - `ProductId`: identifier of the product associated with an existing entitlement that you want to activate.
 
 If you do not know the required tenant or product values, contact your Zentitle administrator.
+
+## 5. Troubleshooting: Gatekeeper / Quarantine
+
+macOS may block execution of newly built or downloaded binaries because of Gatekeeper quarantine checks.
+
+If that happens, you may see a message that the application cannot be opened because the developer cannot be verified, or that macOS cannot verify the software.
+
+If you encounter this, remove the quarantine attribute from the built sample and the matching core library, for example:
+
+```bash
+xattr -rd com.apple.quarantine /path/to/samples-cpp-sdk/Activation.Console/build
+xattr -rd com.apple.quarantine /path/to/Zentitle2_SDK_VERSION/Zentitle2Core/<os_arch>/libZentitle2Core.dylib
+```
+
+Replace the paths with the actual locations on your machine if they differ.
