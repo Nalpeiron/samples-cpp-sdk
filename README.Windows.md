@@ -1,96 +1,109 @@
-# Zentitle Licensing System C++ Application (Windows)
+# Zentitle Licensing System C++ Sample Application (Windows)
 
-## Setup Instructions
+## 1. Prerequisites
 
-### 1. Clone or Extract the Code
+Before building, make sure you have:
 
-Clone or extract the project source code to your local development directory. 
-Note that the SDK headers and sources reside inside the `SDK/src` directory of the unpacked archive.
+- Visual Studio 2022 or Visual Studio Build Tools 2022 with MSVC x64 tools, MSBuild, and the Windows SDK (`Desktop development with C++`)
+- CMake 3.20 or newer
+- `vcpkg`
 
-### 2. Install Dependencies with vcpkg
+If you need Visual Studio 2019 or Visual Studio Build Tools 2019 instead, use the matching generator manually and keep it aligned with the SDK documentation for your environment.
 
 Make sure `vcpkg` is cloned and bootstrapped:
 
-```bash
+```bat
 git clone https://github.com/microsoft/vcpkg.git
 cd vcpkg
-.\bootstrap-vcpkg.bat
+bootstrap-vcpkg.bat
 ```
 
-### 3. Configure and Build with CMake
+The sample uses `vcpkg` manifest mode, so dependencies are resolved automatically during CMake configure when the toolchain file is provided.
 
-Open a **Developer Command Prompt for Visual Studio 2022**, then run:
+## 2. Configure and Build
 
-```bash
+The sample builds the SDK wrapper from `SDK/src` as part of the sample build.
+You do not need to build the SDK separately first.
+
+Open an `x64 Native Tools Command Prompt for Visual Studio 2022` or the equivalent prompt installed by Visual Studio Build Tools 2022, then run:
+
+```bat
 cd samples-cpp-sdk\Activation.Console
-mkdir build
-cd build
 
-cmake .. ^
+cmake -S . -B build ^
   -G "Visual Studio 17 2022" ^
+  -A x64 ^
   -DCMAKE_TOOLCHAIN_FILE="C:/path/to/vcpkg/scripts/buildsystems/vcpkg.cmake" ^
-  -DZENTITLE_CPP_SDK_DIR="C:/path/to/Zentitle2_SDK_VERSION/SDK/src/" ^
-  -DVCPKG_TARGET_TRIPLET=x64-windows
+  -DVCPKG_TARGET_TRIPLET=x64-windows ^
+  -DZENTITLE_CPP_SDK_DIR="C:/path/to/Zentitle2_SDK_VERSION/SDK/src"
 
-cmake --build . --config Release
+cmake --build build --config Release
 ```
 
-Parameter explanations:
+`ZENTITLE_CPP_SDK_DIR` must point to the `SDK/src` directory inside the unpacked SDK package.
 
-* -G "Visual Studio 17 2022"
-Specifies the generator to use – in this case, the one for Visual Studio 2022. This tells CMake to generate project files compatible with that version.
+Example:
 
-* -DCMAKE_TOOLCHAIN_FILE="..."
-Informs CMake to use the specified vcpkg toolchain file. This allows automatic integration of vcpkg-managed dependencies.
-
-* -DZENTITLE_CPP_SDK_DIR="..."
-Custom CMake variable used to locate the Zentitle C++ SDK (e.g. headers and compiled libraries).
-Important: This path must point to the src subdirectory inside the SDK, where the actual header and source files reside.
-*Example:*
-```bash
--DZENTITLE_CPP_SDK_DIR="C:/path/to/OneDrive/Documents/praca/Zentitle2_SDK_v2.1.2/SDK/src/"
+```bat
+-DZENTITLE_CPP_SDK_DIR="C:/path/to/Zentitle2_SDK_VERSION/SDK/src"
 ```
 
-* -DVCPKG_TARGET_TRIPLET="x64-windows" *
-Forces CMake’s vcpkg integration to pull libraries from the x64-windows triplet. A triplet defines the target architecture (plus CRT/runtime flavor), 
-so this keeps the build and linker aligned with 64-bit Windows binaries. If you are targeting another triplet (e.g. `x86-windows`), change both the CMake flag and the earlier `vcpkg install` command to match.
+## 3. Run the Sample
 
-Replace all placeholder paths (e.g. C:/path/to/vcpkg, Zentitle2_SDK_VERSION) with the actual paths on your system.
+After building, the executable will be located at:
 
-### 4. Running the Application
-
-After building, the output binary will be located in:
-
-```
+```text
 build/Release/Zentitle.Activation.Example.exe
 ```
 
-### Before running the application, make sure to configure the required values in the appsettings.json file. For details, see the README.md.
+Before running:
 
-## Troubleshooting: MSB6003 / DirectoryNotFoundException (Long Path Issue on Windows)
+- Edit `build/Release/appsettings.json`.
+- Keep `UseCoreLibrary` set to `true` for the current sample.
+- `CoreLibPath` is generated automatically when `ZENTITLE_CPP_SDK_DIR` points to the unpacked SDK layout.
+- Keep the matching `Zentitle2Core/<os_arch>/` runtime library available in the SDK package layout.
+
+## 4. Configuration
+
+After building, edit `build/Release/appsettings.json`.
+The generated file will contain the main settings used by the sample:
+
+```json
+{
+  "UseCoreLibrary": true,
+  "CoreLibPath": "full/path/to/core/library",
+  "Licensing": {
+    "ApiUrl": "",
+    "TenantId": "",
+    "TenantRsaKeyModulus": "",
+    "ProductId": ""
+  }
+}
+```
+
+- `UseCoreLibrary`: keep this set to `true` for the current sample.
+- `CoreLibPath`: path to the native Zentitle core shared library (`.dll`). When `ZENTITLE_CPP_SDK_DIR` points to the unpacked SDK layout, this path is generated automatically and usually does not need to be edited manually.
+- `ApiUrl`: URL of the Zentitle Licensing API.
+- `TenantId`: your Zentitle tenant identifier.
+- `TenantRsaKeyModulus`: tenant RSA modulus used by the current sample configuration.
+- `ProductId`: identifier of the product associated with an existing entitlement that you want to activate.
+
+If you do not know the required tenant or product values, contact your Zentitle administrator.
+
+## 5. Troubleshooting: Long Windows Paths
 
 If you encounter an error similar to:
 
-    error MSB6003: The specified task executable "CL.exe" could not be run.
-    System.IO.DirectoryNotFoundException: Could not find a part of the path ...
-    Zentitle2CoreLibrary.dir\Release\Zentitle.<hash>.tlog
-
-This is **not** a problem with `CL.exe`.\
-The real issue is a *too long file path*, especially when the project is
-inside OneDrive.
-
-### How to fix
-
-1.  Move the project to a short path, e.g.:
-```
-    C:\dev\zentitle
+```text
+error MSB6003: The specified task executable "CL.exe" could not be run.
+System.IO.DirectoryNotFoundException: Could not find a part of the path ...
+Zentitle2CoreLibrary.dir\Release\Zentitle.<hash>.tlog
 ```
 
-2.  Recreate your `build` directory:
-``` bash
-rmdir /S /Q build
-mkdir build
-```
+The likely issue is a path that is too long, especially when the project is inside OneDrive.
 
-3.  Re-run CMake and build again.
+To fix it:
 
+1. Move the project to a short path such as `C:\dev\zentitle`.
+2. Recreate the `build` directory.
+3. Re-run CMake and build again.

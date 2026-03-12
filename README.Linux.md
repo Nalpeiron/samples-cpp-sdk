@@ -1,38 +1,92 @@
-# Zentitle Licensing System C++ Application (Linux)
+# Zentitle Licensing System C++ Sample Application (Linux)
 
-## Setup Instructions
+## 1. Prerequisites
 
-### 1. Clone or Extract the Code
+Install the required build tools and native dependencies:
 
-Clone or extract the project source code to your local development directory. 
-Note that the SDK headers and sources reside inside the `SDK/src` directory of the unpacked archive.
+```bash
+sudo apt update
+sudo apt install build-essential cmake libcurl4-openssl-dev libssl-dev zlib1g-dev
+```
 
-### 2. Configure and Build with CMake
-   Use the following commands to configure and build the project:
+The sample builds the SDK wrapper from `SDK/src` as part of the sample build, so it also needs the SDK's native dependencies such as the zlib development package.
+
+If you are using another Linux distribution, follow the dependency guidance from the SDK package under `SDK/src/README.Linux.md` and install the equivalent zlib development package for your distribution.
+
+## 2. Configure and Build
+
+The sample builds the SDK wrapper from `SDK/src` as part of the sample build.
+You do not need to build the SDK separately first.
 
 ```bash
 cd samples-cpp-sdk/Activation.Console
-mkdir build
-cd build
 
-cmake -G"Unix Makefiles" -DZENTITLE_CPP_SDK_DIR="/path/to/Zentitle2_SDK_VERSION/SDK/src/" ..
-cmake --build . --config Release
+cmake -S . -B build \
+  -G "Unix Makefiles" \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DZENTITLE_CPP_SDK_DIR="/path/to/Zentitle2_SDK_VERSION/SDK/src"
+
+cmake --build build
 ```
 
-* -DZENTITLE_CPP_SDK_DIR="..."
-Custom CMake variable used to locate the Zentitle C++ SDK (e.g. headers and compiled libraries).
-Important: This path must point to the src subdirectory inside the SDK, where the actual header and source files reside.
-*Example:*
+`ZENTITLE_CPP_SDK_DIR` must point to the `SDK/src` directory inside the unpacked SDK package.
+
+With the `Unix Makefiles` generator, `Release` is selected through `-DCMAKE_BUILD_TYPE=Release`.
+To build a debug variant, configure a separate build directory with `-DCMAKE_BUILD_TYPE=Debug`, for example:
+
 ```bash
--DZENTITLE_CPP_SDK_DIR="/path/to/Zentitle2_SDK_v2.1.2/SDK/src/"
+cmake -S . -B build-debug \
+  -G "Unix Makefiles" \
+  -DCMAKE_BUILD_TYPE=Debug \
+  -DZENTITLE_CPP_SDK_DIR="/path/to/Zentitle2_SDK_VERSION/SDK/src"
+
+cmake --build build-debug
 ```
 
-### 4. Running the Application
+Example:
 
-After building, the output binary will be located in:
-
+```bash
+-DZENTITLE_CPP_SDK_DIR="/path/to/Zentitle2_SDK_VERSION/SDK/src"
 ```
+
+## 3. Run the Sample
+
+After building, the executable will be located at:
+
+```text
 build/Zentitle.Activation.Example
 ```
 
-### Before running the application, make sure to configure the required values in the appsettings.json file. For details, see the README.md.
+Before running:
+
+- Edit `build/appsettings.json`.
+- Keep `UseCoreLibrary` set to `true` for the current sample.
+- `CoreLibPath` is generated automatically when `ZENTITLE_CPP_SDK_DIR` points to the unpacked SDK layout.
+- Keep the matching `Zentitle2Core/<os_arch>/` runtime library available in the SDK package layout.
+
+## 4. Configuration
+
+After building, edit `build/appsettings.json`.
+The generated file will contain the main settings used by the sample:
+
+```json
+{
+  "UseCoreLibrary": true,
+  "CoreLibPath": "full/path/to/core/library",
+  "Licensing": {
+    "ApiUrl": "",
+    "TenantId": "",
+    "TenantRsaKeyModulus": "",
+    "ProductId": ""
+  }
+}
+```
+
+- `UseCoreLibrary`: keep this set to `true` for the current sample.
+- `CoreLibPath`: path to the native Zentitle core shared library (`.so`). When `ZENTITLE_CPP_SDK_DIR` points to the unpacked SDK layout, this path is generated automatically and usually does not need to be edited manually.
+- `ApiUrl`: URL of the Zentitle Licensing API.
+- `TenantId`: your Zentitle tenant identifier.
+- `TenantRsaKeyModulus`: tenant RSA modulus used by the current sample configuration.
+- `ProductId`: identifier of the product associated with an existing entitlement that you want to activate.
+
+If you do not know the required tenant or product values, contact your Zentitle administrator.
