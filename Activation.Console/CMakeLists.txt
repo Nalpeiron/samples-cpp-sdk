@@ -11,10 +11,51 @@ message("Detected platform: ${SYSTEM}")
 find_package(CURL REQUIRED)
 find_package(OpenSSL REQUIRED)
 
-set(ZENTITLE_CPP_SDK_DIR "" CACHE PATH "Path to License Manager directory")
+set(ZENTITLE_CPP_SDK_DIR "" CACHE PATH "Path to the unpacked Zentitle SDK source directory (.../SDK/src)")
+
+if(ZENTITLE_CPP_SDK_DIR STREQUAL "")
+    message(FATAL_ERROR
+        "ZENTITLE_CPP_SDK_DIR is required.\n"
+        "Set it to the SDK source directory inside the unpacked SDK package.\n"
+        "Example:\n"
+        "  -DZENTITLE_CPP_SDK_DIR=/path/to/Zentitle2_SDK_VERSION/SDK/src"
+    )
+endif()
 
 if(NOT EXISTS "${ZENTITLE_CPP_SDK_DIR}")
-    message(FATAL_ERROR "ZENTITLE_CPP_SDK_DIR is not set or path does not exist. Please set -DZENTITLE_CPP_SDK_DIR=/path/to/ZENTITLE_CPP_SDK_DIR")
+    message(FATAL_ERROR
+        "ZENTITLE_CPP_SDK_DIR does not exist:\n"
+        "  ${ZENTITLE_CPP_SDK_DIR}\n"
+        "Expected a path like:\n"
+        "  /path/to/Zentitle2_SDK_VERSION/SDK/src"
+    )
+endif()
+
+set(_ZENTITLE_CPP_SDK_DIR_HINT "")
+if(EXISTS "${ZENTITLE_CPP_SDK_DIR}/SDK/src/CMakeLists.txt")
+    set(_ZENTITLE_CPP_SDK_DIR_HINT "${ZENTITLE_CPP_SDK_DIR}/SDK/src")
+elseif(EXISTS "${ZENTITLE_CPP_SDK_DIR}/src/CMakeLists.txt" AND EXISTS "${ZENTITLE_CPP_SDK_DIR}/lib")
+    set(_ZENTITLE_CPP_SDK_DIR_HINT "${ZENTITLE_CPP_SDK_DIR}/src")
+endif()
+
+if(NOT EXISTS "${ZENTITLE_CPP_SDK_DIR}/CMakeLists.txt" OR NOT IS_DIRECTORY "${ZENTITLE_CPP_SDK_DIR}/src/Zentitle.Licensing.Client.CPP")
+    if(_ZENTITLE_CPP_SDK_DIR_HINT)
+        message(FATAL_ERROR
+            "ZENTITLE_CPP_SDK_DIR must point to the SDK 'src' directory inside the unpacked package.\n"
+            "Received:\n"
+            "  ${ZENTITLE_CPP_SDK_DIR}\n"
+            "Try:\n"
+            "  ${_ZENTITLE_CPP_SDK_DIR_HINT}"
+        )
+    else()
+        message(FATAL_ERROR
+            "ZENTITLE_CPP_SDK_DIR must point to the SDK 'src' directory inside the unpacked package.\n"
+            "Received:\n"
+            "  ${ZENTITLE_CPP_SDK_DIR}\n"
+            "Expected a path like:\n"
+            "  /path/to/Zentitle2_SDK_VERSION/SDK/src"
+        )
+    endif()
 endif()
 
 message(STATUS "Using Zentitle CPP SDK from: ${ZENTITLE_CPP_SDK_DIR}")
