@@ -48,22 +48,7 @@ Example:
 -DZENTITLE_CPP_SDK_DIR="C:/path/to/Zentitle2_SDK_VERSION/SDK/src"
 ```
 
-## 3. Run the Sample
-
-After building, the executable will be located at:
-
-```text
-build/Release/Zentitle.Activation.Example.exe
-```
-
-Before running:
-
-- Edit `build/Release/appsettings.json`.
-- Keep `UseCoreLibrary` set to `true` for the current sample.
-- `CoreLibPath` is generated automatically when `ZENTITLE_CPP_SDK_DIR` points to the unpacked SDK layout.
-- Keep the matching `Zentitle2Core/<os_arch>/` runtime library available in the SDK package layout.
-
-## 4. Configuration
+## 3. Configuration
 
 After building, edit `build/Release/appsettings.json`.
 The generated file will contain the main settings used by the sample:
@@ -90,6 +75,17 @@ The generated file will contain the main settings used by the sample:
 - `Activation Code`: find it in the same entitlement. The sample asks for it at runtime and does not store it in `appsettings.json`.
 
 If you do not know the required tenant or product values, contact your Zentitle administrator.
+
+## 4. Run the Sample
+
+After building, the executable will be located at:
+
+```text
+build/Release/Zentitle.Activation.Example.exe
+```
+
+Before running, keep the matching `Zentitle2Core/<os_arch>/` runtime library available in the SDK package layout.
+The sample will prompt for the activation code at runtime.
 
 ## 5. Troubleshooting: Long Windows Paths
 
