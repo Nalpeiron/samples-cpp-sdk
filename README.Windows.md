@@ -1,5 +1,8 @@
 # Zentitle Licensing System C++ Sample Application (Windows)
 
+> **Note:** On Windows, long project paths can cause build failures, especially in OneDrive-managed folders.
+> To avoid this, place the SDK and sample in a short path such as `C:\dev\zentitle`.
+
 ## 1. Prerequisites
 
 Before building, make sure you have:
