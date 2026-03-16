@@ -28,7 +28,7 @@ The sample uses `vcpkg` manifest mode, so dependencies are resolved automaticall
 The sample builds the SDK wrapper from `SDK/src` as part of the sample build.
 You do not need to build the SDK separately first.
 
-Open an `x64 Native Tools Command Prompt for Visual Studio 2022` or the equivalent prompt installed by Visual Studio Build Tools 2022, then run:
+Open `Developer Command Prompt for VS 2022`, `x64 Native Tools Command Prompt for Visual Studio 2022`, or the equivalent prompt installed by Visual Studio Build Tools 2022, then run:
 
 ```bat
 cd samples-cpp-sdk\Activation.Console
