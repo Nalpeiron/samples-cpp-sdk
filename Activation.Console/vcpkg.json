@@ -14,7 +14,7 @@
     },
     {
       "name": "openssl",
-      "version>=": "3.4.4"
+      "version>=": "3.5.1"
     }
   ],
   "builtin-baseline": "ea2a964f9303270322cf3f2d51c265ba146c422d"
