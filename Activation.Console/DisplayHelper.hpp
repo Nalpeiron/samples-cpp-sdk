@@ -5,6 +5,8 @@
 #include <ctime>
 #include <sstream>
 #include <iomanip>
+#include <type_traits>
+#include <utility>
 
 #include "Activation.hpp"
 #include "ActivationStateModel.hpp"
@@ -21,6 +23,16 @@
 namespace DisplayHelper
 {
 	using namespace ZentitleLicensingClient;
+
+	template <typename T, typename = void>
+	struct HasLingerPeriod : std::false_type
+	{
+	};
+
+	template <typename T>
+	struct HasLingerPeriod<T, std::void_t<decltype(std::declval<const T&>().lingerPeriod)>> : std::true_type
+	{
+	};
 
 	void ShowFeaturesTable(std::vector<ActivationFeature> features, const std::optional<std::string>& keyToHighlight = std::nullopt);
 	void ShowAttributesTable(const std::vector<ActivationAttribute>& attributes);
@@ -128,6 +140,14 @@ namespace DisplayHelper
 		return "type: " + intervalTypeToString(interval.type) + ", count: " + (interval.count.has_value() ? std::to_string(interval.count.value()) : "null");
 	}
 
+	template <typename T>
+	inline std::string lingerPeriodToString(const T& activationEntitlementData)
+	{
+		if constexpr (HasLingerPeriod<T>::value)
+			return intervalToString(activationEntitlementData.lingerPeriod);
+		return "N/A";
+	}
+
 
 	void ShowEntitlementInfoPanel(const ActivationEntitlementModel& activationEntitlementData)
 	{
@@ -140,7 +160,7 @@ namespace DisplayHelper
 		std::cout << "    Product Name: " << activationEntitlementData.productName << std::endl;
 		std::cout << "    " << planModelToString(activationEntitlementData.plan) << std::endl;
 		std::cout << "    Grace Period: " << intervalToString(activationEntitlementData.gracePeriod) << std::endl;
-		std::cout << "    Linger Period: " << intervalToString(activationEntitlementData.lingerPeriod) << std::endl;
+		std::cout << "    Linger Period: " << lingerPeriodToString(activationEntitlementData) << std::endl;
 		std::cout << "    Lease Period: " << intervalToString(activationEntitlementData.leasePeriod) << std::endl;
 		std::cout << "    Offline Lease Period: " << intervalToString(activationEntitlementData.offlineLeasePeriod) << std::endl;
 		std::cout << "    Has Maintenance: " << (activationEntitlementData.hasMaintenance ? "true" : "false") << std::endl;
