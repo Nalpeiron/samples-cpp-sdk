@@ -9,8 +9,12 @@
 #include "LicenseStorage.hpp"
 #include "CoreLibraryManagerConfigProvider.hpp"
 #include "PromptHelper.hpp"
-#include <random>
 #include <array>
+#include <filesystem>
+#include <functional>
+#include <memory>
+#include <random>
+#include <vector>
 
 #ifdef __APPLE__
 #include <termios.h>
@@ -64,6 +68,7 @@ unsigned long long randomize()
 int main()
 {
 	std::string currentPath = std::filesystem::current_path().string();
+	constexpr int fingerprintOptionDefault = 1 << 0;
 
 #ifdef ZEN_WIN64
 #ifdef _DEBUG
@@ -82,7 +87,6 @@ int main()
 	{
 		std::cout << "- Using Zentitle2Core C++ library for secure license storage and offline activation operations" << std::endl;
 
-		helpers::DynamicLibraryLoader::native_handle_type coreLibrary = nullptr;
 		std::unique_ptr<helpers::DynamicLibraryLoader> loader;
 
 		if (!config.CoreLibPath.empty())
@@ -103,22 +107,14 @@ int main()
 			std::array<char, DeviceFingerprintMaxLength> generatedDeviceFingerprint = {};
 			int length = 0;
 
-			if (loadedFunction == nullptr)
+			const bool retValue = loadedFunction(generatedDeviceFingerprint.data(), &length, fingerprintOptionDefault);
+
+			if (!retValue || length < 0 || static_cast<std::size_t>(length) > generatedDeviceFingerprint.size())
 			{
 				return EXIT_FAILURE;
 			}
 
-			const static int FINGERPRINT_OPTION_DEFAULT = 0;
-			bool retValue = loadedFunction(generatedDeviceFingerprint.data(), &length, FINGERPRINT_OPTION_DEFAULT);
-
-			if (!retValue)
-			{
-				return EXIT_FAILURE;
-			}
-
-			seatId = std::string(generatedDeviceFingerprint.data());
-
-			loader.reset();
+			seatId = std::string(generatedDeviceFingerprint.data(), static_cast<std::size_t>(length));
 		}
 		else
 		{
@@ -137,7 +133,7 @@ int main()
 	}
 	else
 	{
-		std::cout << "- Zentitle2Core C++ library usage is disabled in 'appsettings.json', the won't be loaded and offline activation won't work";
+		std::cout << "- Zentitle2Core C++ library usage is disabled in 'appsettings.json', it won't be loaded and offline activation won't work";
 		seatId = std::to_string(randomize());
 		std::cout << "Generated random seatId: " << seatId << std::endl;
 	}
@@ -161,7 +157,15 @@ int main()
 
 	// Get the core library path from the configuration
 	std::filesystem::path coreLibraryPath = config.CoreLibPath;
-	std::string libraryDirectory = coreLibraryPath.parent_path().string() + "/";
+	std::string libraryDirectory;
+	if (!coreLibraryPath.empty())
+	{
+		libraryDirectory = coreLibraryPath.parent_path().string();
+		if (!libraryDirectory.empty())
+		{
+			libraryDirectory += std::filesystem::path::preferred_separator;
+		}
+	}
 	std::string libraryName = coreLibraryPath.filename().string();
 
 	options.setActivationStorage(LicenseStorage::Initialize(config.UseCoreLibrary, libraryDirectory, libraryName, LicenseStorage::DeletionPrompt::Ask));
