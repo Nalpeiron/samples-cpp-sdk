@@ -10,6 +10,7 @@
 #include "CoreLibraryManagerConfigProvider.hpp"
 #include "PromptHelper.hpp"
 #include <array>
+#include <cstdint>
 #include <filesystem>
 #include <functional>
 #include <memory>
@@ -101,15 +102,15 @@ int main()
 
 		if (Confirm([](ConfirmOptions& o) { o.Message = "Use device fingerprint for seat ID generation?"; }))
 		{
-			const auto loadedFunction = loader->get_function<bool(char*, int*, int)>("generateDeviceFingerprint");
+			const auto loadedFunction = loader->get_function<int32_t(char*, int*, int)>("generateDeviceFingerprint");
 
 			const static unsigned int DeviceFingerprintMaxLength = 128;
 			std::array<char, DeviceFingerprintMaxLength> generatedDeviceFingerprint = {};
 			int length = 0;
 
-			const bool retValue = loadedFunction(generatedDeviceFingerprint.data(), &length, fingerprintOptionDefault);
+			const int32_t retValue = loadedFunction(generatedDeviceFingerprint.data(), &length, fingerprintOptionDefault);
 
-			if (!retValue || length < 0 || static_cast<std::size_t>(length) > generatedDeviceFingerprint.size())
+			if (retValue != 0 || length < 0 || static_cast<std::size_t>(length) > generatedDeviceFingerprint.size())
 			{
 				return EXIT_FAILURE;
 			}
