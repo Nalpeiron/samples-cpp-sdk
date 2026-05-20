@@ -158,6 +158,8 @@ namespace DisplayHelper
 		std::cout << "    Offering Name: " << activationEntitlementData.offeringName << std::endl;
 		std::cout << "    SKU: " << activationEntitlementData.sku << std::endl;
 		std::cout << "    Product Name: " << activationEntitlementData.productName << std::endl;
+		std::cout << "    Seat Count: " << activationEntitlementData.seatCount << std::endl;
+		std::cout << "    Seats Used: " << activationEntitlementData.seatsUsed << std::endl;
 		std::cout << "    " << planModelToString(activationEntitlementData.plan) << std::endl;
 		std::cout << "    Grace Period: " << intervalToString(activationEntitlementData.gracePeriod) << std::endl;
 		std::cout << "    Linger Period: " << lingerPeriodToString(activationEntitlementData) << std::endl;
