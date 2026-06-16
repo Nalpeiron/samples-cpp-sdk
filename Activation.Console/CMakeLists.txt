@@ -93,8 +93,20 @@ add_executable(
 set(CURL_USE_OPENSSL ON)
 set(CMAKE_USE_OPENSSL ON)
 
-target_include_directories(${PROJECT_NAME}
-    PUBLIC $<BUILD_INTERFACE:${ZENTITLE_CPP_SDK_DIR}>/../lib/${SYSTEM}/static/Include
+# Use the SDK headers directly from the source tree instead of the flattened,
+# prebuilt `lib/${SYSTEM}/static/Include` copy. This gives a single source of
+# truth for every header (notably IActivationStorage.hpp, which otherwise exists
+# in both the Include dir and the source tree and collides under #pragma once),
+# and lets the sample include internal SDK headers from Persistence/Storage.
+set(ZEN_SDK_SRC "${ZENTITLE_CPP_SDK_DIR}/src/Zentitle.Licensing.Client.CPP")
+target_include_directories(${PROJECT_NAME} PRIVATE
+    ${ZEN_SDK_SRC}/Api/LicenseManager
+    ${ZEN_SDK_SRC}/Api/Models
+    ${ZEN_SDK_SRC}/Features
+    ${ZEN_SDK_SRC}/Commons
+    ${ZEN_SDK_SRC}/Persistence
+    ${ZEN_SDK_SRC}/Persistence/Storage
+    ${ZEN_SDK_SRC}/Zentitle2CoreLibrary
 )
 
 include_directories(${ZENTITLE_CPP_SDK_DIR}/libextern_libraries/nlohmann/)
