@@ -5,6 +5,7 @@
 #include <ctime>
 #include <sstream>
 #include <iomanip>
+#include <optional>
 #include <type_traits>
 #include <utility>
 
@@ -75,6 +76,22 @@ namespace DisplayHelper
 		std::stringstream ss;
 		ss << std::put_time(std::localtime(&time), "%F %T");
 		return ss.str();
+	}
+
+	inline std::string dateTimeToString(std::time_t time)
+	{
+		return timeToString(time);
+	}
+
+	inline std::string dateTimeToString(const std::string& value)
+	{
+		return value.empty() ? "N/A" : value;
+	}
+
+	template <typename T>
+	inline std::string optionalDateTimeToString(const std::optional<T>& value)
+	{
+		return value.has_value() ? dateTimeToString(value.value()) : "N/A";
 	}
 
 	inline std::string licenseTypeToString(LicenseType licenseType)
@@ -166,8 +183,8 @@ namespace DisplayHelper
 		std::cout << "    Lease Period: " << intervalToString(activationEntitlementData.leasePeriod) << std::endl;
 		std::cout << "    Offline Lease Period: " << intervalToString(activationEntitlementData.offlineLeasePeriod) << std::endl;
 		std::cout << "    Has Maintenance: " << (activationEntitlementData.hasMaintenance ? "true" : "false") << std::endl;
-		std::cout << "    Maintenance Expiry Date: " << (activationEntitlementData.maintenanceExpiryDate.has_value() ? *activationEntitlementData.maintenanceExpiryDate : "N/A") << std::endl;
-		std::cout << "    Snapshot Date: " << activationEntitlementData.snapshotDate << std::endl;
+		std::cout << "    Maintenance Expiry Date: " << optionalDateTimeToString(activationEntitlementData.maintenanceExpiryDate) << std::endl;
+		std::cout << "    Snapshot Date: " << dateTimeToString(activationEntitlementData.snapshotDate) << std::endl;
 	}
 
 	void ShowActivationStateModelPanel(const Activation& activation)
