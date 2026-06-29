@@ -9,6 +9,7 @@
 #include "LicenseStorage.hpp"
 #include "CoreLibraryManagerConfigProvider.hpp"
 #include "PromptHelper.hpp"
+#include "Zentitle.Licensing.Client.CPP/Commons/PlainLogger.hpp"
 #include <array>
 #include <cstdint>
 #include <filesystem>
@@ -21,6 +22,16 @@
 #include <termios.h>
 #include <unistd.h>
 #endif
+
+void printApiError(const ZentitleLicensingClient::LicensingApiException& ex)
+{
+	const auto& e = ex.getApiError();
+
+	std::cerr << "HTTP status: " << e.httpStatusCode << "\n";
+	if (e.errorCode) std::cerr << "Error code: " << *e.errorCode << "\n";
+	if (e.error) std::cerr << "Error: " << *e.error << "\n";
+	if (e.details) std::cerr << "Details: " << *e.details << "\n";
+}
 
 void handleExceptions(const std::function<void()>& func)
 {
@@ -46,6 +57,11 @@ void handleExceptions(const std::function<void()>& func)
 	{
 		std::cerr << "StateException: " << e.what() << std::endl;
 	}
+	catch (const LicensingApiException& e)
+	{
+		std::cerr << "LicensingApiException: " << e.what() << std::endl;
+		printApiError(e);
+	}
 	catch (const SDKException& e)
 	{
 		std::cerr << "SDKException: " << e.what() << std::endl;
@@ -68,6 +84,8 @@ unsigned long long randomize()
 
 int main()
 {
+	SDKLogger::init("ZentitleSDK.log");
+
 	std::string currentPath = std::filesystem::current_path().string();
 	constexpr int fingerprintOptionDefault = 1 << 0;
 

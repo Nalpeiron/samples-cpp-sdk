@@ -107,6 +107,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${ZEN_SDK_SRC}/Persistence
     ${ZEN_SDK_SRC}/Persistence/Storage
     ${ZEN_SDK_SRC}/Zentitle2CoreLibrary
+    ${ZENTITLE_CPP_SDK_DIR}/libraries/third_party/aixlog/include
 )
 
 include_directories(${ZENTITLE_CPP_SDK_DIR}/libextern_libraries/nlohmann/)
