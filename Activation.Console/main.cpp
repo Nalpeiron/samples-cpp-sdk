@@ -236,6 +236,7 @@ int main()
 						(name == "Checkout advanced feature" ||
 							name == "Return element-pool feature" ||
 							name == "Track usage of a bool feature" ||
+							name == "Track application event" ||
 							name == "Deactivate license" ||
 							name == "Refresh activation lease" ||
 							name == "Pull activation state from the server"))

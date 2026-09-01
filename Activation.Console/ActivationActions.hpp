@@ -5,6 +5,7 @@
 #include "SDKExceptions.hpp"
 #include "LicensingApiException.hpp"
 #include "ActivationCodeCredentialsModel.hpp"
+#include "ApplicationEvent.hpp"
 #include "Helpers.hpp"
 #include <optional>
 #include <iostream>
@@ -504,6 +505,70 @@ namespace ActivationActions
 			});
 	}
 
+	void TrackApplicationEvent(Activation& activation)
+	{
+		ExecuteWithErrorHandling("Event tracking failed", [&]()
+			{
+				const std::vector<std::pair<std::string, ApplicationEventType>> eventTypes = {
+					{"Custom", ApplicationEventType::Custom},
+					{"Application start", ApplicationEventType::ApplicationStart},
+					{"Application stop", ApplicationEventType::ApplicationStop},
+					{"User login", ApplicationEventType::UserLogin},
+					{"User logout", ApplicationEventType::UserLogout},
+					{"Feature usage", ApplicationEventType::FeatureUsage},
+					{"Feature limit exceeded", ApplicationEventType::FeatureLimitExceeded},
+					{"Feature access denied", ApplicationEventType::FeatureAccessDenied},
+					{"Page view", ApplicationEventType::PageView},
+					{"Element click", ApplicationEventType::ElementClick},
+					{"Form submit", ApplicationEventType::FormSubmit},
+					{"File download", ApplicationEventType::FileDownload},
+					{"File upload", ApplicationEventType::FileUpload},
+					{"Search", ApplicationEventType::Search}
+				};
+
+				std::cout << "Event types:" << std::endl;
+				for (std::size_t index = 0; index < eventTypes.size(); ++index)
+				{
+					std::cout << index + 1 << ". " << eventTypes[index].first << std::endl;
+				}
+
+				std::string selection;
+				std::cout << "Select event type: ";
+				std::getline(std::cin, selection);
+				std::size_t eventTypeIndex = 0;
+				if (!InputHelper::TryParseSizeT(InputHelper::TrimCopy(selection), eventTypeIndex)
+					|| eventTypeIndex == 0 || eventTypeIndex > eventTypes.size())
+				{
+					DisplayHelper::WriteError("Invalid event type selection.");
+					return;
+				}
+
+				std::string eventName;
+				std::cout << "Enter event name: ";
+				std::getline(std::cin, eventName);
+
+				std::string eventValue;
+				std::cout << "Enter event value (keep empty for none): ";
+				std::getline(std::cin, eventValue);
+
+				const auto value = eventValue.empty()
+					? std::optional<std::string>{}
+					: std::optional<std::string>{eventValue};
+				const ApplicationEvent applicationEvent(eventName, eventTypes[eventTypeIndex - 1].second, value);
+				const TrackEventRes result = activation.trackEvent(applicationEvent).get();
+
+				if (result.accepted)
+				{
+					DisplayHelper::WriteSuccess("Application event successfully tracked.");
+				}
+				else
+				{
+					DisplayHelper::WriteError("Application event was rejected"
+						+ (result.rejectionReason.has_value() ? ": " + *result.rejectionReason : "."));
+				}
+			});
+	}
+
 	void ActivateOffline(Activation& activation)
 	{
 		ExecuteWithErrorHandling("Offline activation failed", [&]()
@@ -555,6 +620,7 @@ namespace ActivationActions
 				[](Activation& activation, const std::string& host) { CheckoutFeature(activation); },
 				[](Activation& activation, const std::string& host) { ReturnFeature(activation); },
 				[](Activation& activation, const std::string& host) { TrackFeatureUsage(activation); },
+				[](Activation& activation, const std::string& host) { TrackApplicationEvent(activation); },
 				[](Activation& activation, const std::string& host) { RefreshLease(activation); },
 				[](Activation& activation, const std::string& host) { RefreshLeaseOffline(activation); },
 				[](Activation& activation, const std::string& host) { Deactivate(activation); },
@@ -568,6 +634,7 @@ namespace ActivationActions
 				"Checkout advanced feature",
 				"Return element-pool feature",
 				"Track usage of a bool feature",
+				"Track application event",
 				"Refresh activation lease",
 				"Refresh offline activation lease (with refresh token from End User Portal)",
 				"Deactivate license",
